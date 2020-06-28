@@ -1,0 +1,26 @@
+---
+ - hosts: localhost
+   gather_facts: no
+   module_defaults:
+     group/aws:
+       region: "us-east-2"
+   tasks:
+    - name: create load balancer
+      elb_network_lb:
+        name: m5-nlb
+        type: network
+        scheme: internet-facing
+        vpc_id: "{{ vpc.vpc.id }}"
+        subnets:
+          - "{{ public_subnet.subnet.id }}"
+        listeners:
+          - Protocol: TCP
+            Port: 80
+          - Protocol: TLS
+            Port: 443
+            DefaultActions:
+              - Type: forward
+            - certificates:
+              certificate_arn: 	arn:aws:acm:us-east-2:451353608903:certificate/0fadeaff-ccb5-4570-a31f-1c30673183
+        state: present
+ 
